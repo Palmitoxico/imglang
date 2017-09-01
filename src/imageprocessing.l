@@ -11,11 +11,28 @@ void yyerror(char *);
 
 %%
 
+\[	{
+	return ABRE_COL;
+	}
+
+\]	{
+	return FECHA_COL;
+	}
+
+[0-9]+(.[0-9]+)? {
+		yylval.numval = strtof(yytext, NULL);
+        printf ("Achei um numero: %f\n", yylval.numval);
+		return NUMERO;
+		}
+
 [a-z]  {
         yylval.ival = yytext[0] - 'a';
         return VAR;
        }
 
+[/] { return DIVIDIR; }
+
+\* { return MULTIPLICAR; }
 
 \" { return ASPA; }
 
