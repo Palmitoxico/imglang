@@ -1,8 +1,7 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <stdarg.h>
 #include "imageprocessing.h"
 
 #include <FreeImage.h>
@@ -13,6 +12,16 @@
   void liberar_imagem(imagem *i);
 */
 
+int debug = 0;
+void dbgmsg(const char *s, ...) {
+	if (debug) {
+		va_list args;
+		va_start(args, s);
+		vprintf(s, args);
+		va_end(args);
+	}
+}
+
 imagem abrir_imagem(char *nome_do_arquivo) {
 	FIBITMAP *bitmapIn;
 	int x, y;
@@ -22,9 +31,9 @@ imagem abrir_imagem(char *nome_do_arquivo) {
 	bitmapIn = FreeImage_Load(FIF_JPEG, nome_do_arquivo, 0);
 
 	if (bitmapIn == 0) {
-		printf("Erro! Nao achei arquivo - %s\n", nome_do_arquivo);
+		fprintf(stderr, "Erro! Nao achei arquivo - %s\n", nome_do_arquivo);
 	} else {
-		printf("Arquivo lido corretamente!\n");
+		dbgmsg("Arquivo lido corretamente!\n");
 	}
 
 	x = FreeImage_GetWidth(bitmapIn);
@@ -92,7 +101,7 @@ void salvar_imagem(char *nome_do_arquivo, imagem *I) {
 	FIBITMAP *bitmapOut;
 	RGBQUAD color;
 
-	printf("Salvando imagem %d por %d...\n", I->width, I->height);
+	dbgmsg("Salvando imagem %d por %d...\n", I->width, I->height);
 	bitmapOut = FreeImage_Allocate(I->width, I->height, 24, 0, 0, 0);
 
 	for (int i=0; i<I->width; i++) {

@@ -1,7 +1,7 @@
-
 %{
 #include <stdlib.h>
 #include <string.h>
+#include "imageprocessing.h"
 void yyerror(char *);
 
 #include "y.tab.h"
@@ -21,7 +21,7 @@ void yyerror(char *);
 
 [0-9]+(.[0-9]+)? {
 		yylval.numval = strtof(yytext, NULL);
-        printf ("Achei um numero: %f\n", yylval.numval);
+        dbgmsg("Achei um numero: %f\n", yylval.numval);
 		return NUMERO;
 		}
 
@@ -41,7 +41,7 @@ void yyerror(char *);
           yylval.strval[i] = yytext[i];
 
         yylval.strval[yyleng] = '\0';
-        printf ("Achei nome: %s\n", yylval.strval);
+        dbgmsg("Achei nome: %s\n", yylval.strval);
         return STRING;
        }
 
@@ -55,7 +55,7 @@ void yyerror(char *);
 
 [ \t]+ ;
 
-.     {printf("**%s**\n", yytext);
+.     {dbgmsg("**%s**\n", yytext);
 yyerror("Token nao reconhecido!\n");}
 
 %%

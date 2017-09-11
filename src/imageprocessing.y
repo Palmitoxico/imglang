@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "imageprocessing.h"
 #include <FreeImage.h>
+#include <string.h>
 
 void yyerror(char *c);
 int yylex(void);
@@ -27,26 +28,26 @@ PROGRAMA:
 EXPRESSAO:
     | STRING IGUAL STRING
 	{
-        printf("Copiando %s para %s\n", $3, $1);
+        dbgmsg("Copiando %s para %s\n", $3, $1);
         imagem I = abrir_imagem($3);
-        printf("Li imagem %d por %d\n", I.width, I.height);
+        dbgmsg("Li imagem %d por %d\n", I.width, I.height);
         salvar_imagem($1, &I);
 		liberar_imagem(&I);
 	}
 	| STRING IGUAL STRING MULTIPLICAR NUMERO
 	{
-		printf("Aplicando brilho de %s para %s\n", $3, $1);
+		dbgmsg("Aplicando brilho de %s para %s\n", $3, $1);
         imagem I = abrir_imagem($3);
-        printf("Li imagem %d por %d\n", I.width, I.height);
+        dbgmsg("Li imagem %d por %d\n", I.width, I.height);
 		aplicar_brilho($5, &I);
         salvar_imagem($1, &I);
 		liberar_imagem(&I);
 	}
 	| STRING IGUAL STRING DIVIDIR NUMERO
 	{
-		printf("Aplicando brilho de %s para %s\n", $3, $1);
+		dbgmsg("Aplicando brilho de %s para %s\n", $3, $1);
         imagem I = abrir_imagem($3);
-        printf("Li imagem %d por %d\n", I.width, I.height);
+        dbgmsg("Li imagem %d por %d\n", I.width, I.height);
 		aplicar_brilho(1.0/$5, &I);
         salvar_imagem($1, &I);
 		liberar_imagem(&I);
@@ -54,7 +55,7 @@ EXPRESSAO:
 	| ABRE_COL STRING FECHA_COL
 	{
 		imagem I = abrir_imagem($2);
-        printf("Li imagem %d por %d\n", I.width, I.height);
+        dbgmsg("Li imagem %d por %d\n", I.width, I.height);
 		printf("%f\n", pixel_max(&I));
 		liberar_imagem(&I);
 	}				
@@ -65,9 +66,16 @@ void yyerror(char *s) {
     fprintf(stderr, "%s\n", s);
 }
 
-int main() {
-  FreeImage_Initialise(0);
-  yyparse();
-  return 0;
-
+int main(int argc, char **argv) {
+	if (argc == 2) {
+		if (strcmp("-d", argv[1]) == 0) {
+			debug = 1;
+		}
+		else if (strcmp("--debug", argv[1]) == 0) {
+			debug = 1;
+		}
+	}
+	FreeImage_Initialise(0);
+	yyparse();
+	return 0;
 }

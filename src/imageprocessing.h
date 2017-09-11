@@ -13,5 +13,7 @@ void salvar_imagem(char *nome_do_arquivo, imagem *I);
 void liberar_imagem(imagem *I);
 void aplicar_brilho(float brilho, imagem *I);
 float pixel_max(imagem *I);
+void dbgmsg(const char *s, ...);
+extern int debug;
 
 #endif
