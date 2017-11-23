@@ -104,7 +104,7 @@ void aplicar_brilho(float brilho, imagem *I) {
 		break;
 
 	case thread_columns:
-		
+		apply_bright_thread_columns(brilho, I, num_jobs);
 		break;
 
 	case single_thread_lines:
@@ -143,4 +143,3 @@ void salvar_imagem(char *nome_do_arquivo, imagem *I) {
 	FreeImage_Save(FIF_JPEG, bitmapOut, nome_do_arquivo, JPEG_DEFAULT);
 	FreeImage_Unload(bitmapOut);
 }
-
