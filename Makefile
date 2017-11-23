@@ -2,7 +2,7 @@ CFLAGS = -std=gnu99 -g -Og
 SRCDIR=./src
 
 all: lex.yy.c y.tab.c lib_imageprocessing.o brightness.o
-	gcc $(CFLAGS) -omain brightness.o lex.yy.c y.tab.c lib_imageprocessing.o -ll -lfreeimage -I$(SRCDIR)
+	gcc $(CFLAGS) -omain brightness.o lex.yy.c y.tab.c lib_imageprocessing.o -ll -lpthread -lfreeimage -I$(SRCDIR)
 
 lex.yy.c:$(SRCDIR)/imageprocessing.l
 	lex $<
