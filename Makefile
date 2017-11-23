@@ -1,4 +1,4 @@
-CFLAGS = -std=c99
+CFLAGS = -std=gnu99 -g -Og
 SRCDIR=./src
 
 all: lex.yy.c y.tab.c lib_imageprocessing.o
