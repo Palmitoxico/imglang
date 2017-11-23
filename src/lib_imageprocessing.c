@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
 #include "imageprocessing.h"
+#include "brightness.h"
 
 #include <FreeImage.h>
 
@@ -41,9 +45,9 @@ imagem abrir_imagem(char *nome_do_arquivo) {
 
 	I.width = x;
 	I.height = y;
-	I.r = malloc(sizeof(float) * x * y);
-	I.g = malloc(sizeof(float) * x * y);
-	I.b = malloc(sizeof(float) * x * y);
+	I.r = (float*) mmap(NULL, sizeof(float) * x * y, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
+	I.g = (float*) mmap(NULL, sizeof(float) * x * y, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
+	I.b = (float*) mmap(NULL, sizeof(float) * x * y, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 
 	for (int i=0; i<x; i++) {
 		for (int j=0; j <y; j++) {
@@ -80,21 +84,39 @@ float pixel_max(imagem *I)
 }
 
 void liberar_imagem(imagem *I) {
-	free(I->r);
-	free(I->g);
-	free(I->b);
+	munmap(I->r, I->height * I->width * sizeof(float));
+	munmap(I->g, I->height * I->width * sizeof(float));
+	munmap(I->b, I->height * I->width * sizeof(float));
 }
 
 void aplicar_brilho(float brilho, imagem *I) {
-	int img_size = I->height * I->width;
-	float  pixval = 0;
-	for (int index = 0; index < img_size; index++) {
-		pixval = I->r[index] * brilho;
-		I->r[index] = (pixval <= 255.0) ? pixval : 255.0;
-		pixval = I->g[index] * brilho;
-		I->g[index] = (pixval <= 255.0) ? pixval : 255.0;
-		pixval = I->b[index] * brilho;
-		I->b[index] = (pixval <= 255.0) ? pixval : 255.0;
+	switch (strategy) {
+	case fork_lines:
+		apply_bright_fork_lines(brilho, I, num_jobs);
+		break;
+
+	case fork_columns:
+		
+		break;
+
+	case thread_lines:
+		
+		break;
+
+	case thread_columns:
+		
+		break;
+
+	case single_thread_lines:
+		apply_bright_single_thread_lines(brilho, I);
+		break;
+
+	case single_thread_columns:
+		
+		break;
+
+	default:
+		break;
 	}
 }
 

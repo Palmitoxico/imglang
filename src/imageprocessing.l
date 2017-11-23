@@ -10,7 +10,6 @@ void yyerror(char *);
 
 
 %%
-
 \[	{
 	return ABRE_COL;
 	}
@@ -36,7 +35,7 @@ void yyerror(char *);
 
 \" { return ASPA; }
 
-[a-zA-Z0-9\.]+  {
+[a-zA-Z0-9\.\_]+  {
         for (int i = 0; i < yyleng; i++ )
           yylval.strval[i] = yytext[i];
 
