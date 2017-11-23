@@ -7,11 +7,18 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+#include <pthread.h>
 #include "imageprocessing.h"
 #include "brightness.h"
 
 int num_jobs = 1;
 smp_strategy strategy = single_thread_lines;
+
+typedef struct{
+	imagem *new_image;
+	int start, end;	
+	float brightness;
+}data;
 
 void apply_bright_range(float brilho, imagem *I, int start, int end) {
 	int index;
@@ -148,3 +155,49 @@ void apply_bright_fork_columns(float brilho, imagem *I, int jobs) {
 	dbgmsg("Elapsed time: %f seconds.\n", (double)(end - start)/CLOCKS_PER_SEC);
 }
 
+void *thread_func_column(void *data_img){
+	data *image_data = (data*)data_img;
+	int ref = 0;
+	float  pixval = 0;
+	for (int index = image_data->start; index < image_data->end; index++){
+		ref = (index % image_data->new_image->height) * image_data->new_image->width + (index / image_data->new_image->height);
+		pixval = image_data->new_image->r[ref] * image_data->brightness;
+		image_data->new_image->r[ref] = (pixval <= 255.0) ? pixval : 255.0;
+		pixval = image_data->new_image->g[ref] * image_data->brightness;
+		image_data->new_image->g[ref] = (pixval <= 255.0) ? pixval : 255.0;
+		pixval = image_data->new_image->b[ref] * image_data->brightness;
+		image_data->new_image->b[ref] = (pixval <= 255.0) ? pixval : 255.0;
+	}
+}
+
+void apply_bright_thread_columns(float brilho, imagem *I, int jobs){
+	int img_size = (I->width * I->height), block = img_size/jobs, rest = 0;
+	clock_t start, end;
+	pthread_t threads[jobs];
+	data data_img[jobs];
+	
+	start = clock();
+	if((img_size % jobs) == 0)
+		rest = block;
+	else
+		rest = block + img_size % jobs;
+		
+	for(int index = 0; index < jobs; index++){
+		data_img[index].new_image = I;
+		data_img[index].brightness = brilho;
+		data_img[index].start = index * block;
+		if(index == (jobs - 1))
+			data_img[index].end = data_img[index].start + rest;
+		else
+			data_img[index].end = data_img[index].start + block;
+		pthread_create(&(threads[index]), NULL, thread_func_column, &data_img[index]);
+	}
+		
+	for(int j = 0; j < jobs; j++)
+		pthread_join(threads[j], NULL);	
+		
+	end = clock();
+	
+	dbgmsg("Image processing strategy: multi-threads (%d threads), operating by columns.\n", jobs);
+	dbgmsg("Elapsed time: %f seconds.\n", (double)(end - start)/CLOCKS_PER_SEC);	
+}
