@@ -16,7 +16,7 @@
   void liberar_imagem(imagem *i);
 */
 
-int debug = 0;
+int debug = 1;
 void dbgmsg(const char *s, ...) {
 	if (debug) {
 		va_list args;
@@ -96,7 +96,7 @@ void aplicar_brilho(float brilho, imagem *I) {
 		break;
 
 	case fork_columns:
-		
+		apply_bright_fork_columns(brilho, I, num_jobs);
 		break;
 
 	case thread_lines:
