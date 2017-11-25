@@ -100,7 +100,7 @@ void aplicar_brilho(float brilho, imagem *I) {
 		break;
 
 	case thread_lines:
-		
+		apply_bright_thread_lines(brilho, I, num_jobs);
 		break;
 
 	case thread_columns:
@@ -112,7 +112,7 @@ void aplicar_brilho(float brilho, imagem *I) {
 		break;
 
 	case single_thread_columns:
-		
+		apply_bright_single_thread_columns(brilho, I);
 		break;
 
 	default:
