@@ -33,22 +33,19 @@ void apply_bright_range(float brilho, imagem *I, int start, int end) {
 	}
 }
 
-void apply_bright_range_columns(float brilho, imagem *I, int col_start, int col_end) {
-	int index, column, line;
+void apply_bright_range_columns(float brilho, imagem *I, int start, int end) {
+	int colindex, index, column, line;
 	float pixval = 0;
 	
-	
-	for (column = col_start; column < col_end; column++) {
-		for (line = 0; line < I->height; line++){
-			index = (line * I->width) + column;
+	for (colindex = start; colindex < end; colindex++) {
+		index = ((colindex % I->height) * I->width) + colindex / I->height;
 			
-			pixval = I->r[index] * brilho;
-			I->r[index] = (pixval <= 255.0) ? pixval : 255.0;
-			pixval = I->g[index] * brilho;
-			I->g[index] = (pixval <= 255.0) ? pixval : 255.0;
-			pixval = I->b[index] * brilho;
-			I->b[index] = (pixval <= 255.0) ? pixval : 255.0;
-		}
+		pixval = I->r[index] * brilho;
+		I->r[index] = (pixval <= 255.0) ? pixval : 255.0;
+		pixval = I->g[index] * brilho;
+		I->g[index] = (pixval <= 255.0) ? pixval : 255.0;
+		pixval = I->b[index] * brilho;
+		I->b[index] = (pixval <= 255.0) ? pixval : 255.0;
 	}
 }
 
