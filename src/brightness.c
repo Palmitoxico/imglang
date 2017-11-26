@@ -39,7 +39,7 @@ void apply_bright_range_columns(float brilho, imagem *I, int start, int end) {
 	
 	for (colindex = start; colindex < end; colindex++) {
 		index = ((colindex % I->height) * I->width) + colindex / I->height;
-			
+
 		pixval = I->r[index] * brilho;
 		I->r[index] = (pixval <= 255.0) ? pixval : 255.0;
 		pixval = I->g[index] * brilho;
@@ -77,7 +77,7 @@ void bright_dispatcher(float brilho, imagem *I, int jobs, pid_t *processes) {
 
 void bright_dispatcher_columns(float brilho, imagem *I, int jobs, pid_t *processes) {
 	int img_size = I->height * I->width;
-	int segment = I->width / jobs;
+	int segment = img_size / jobs;
 	int index, remainer, col_start, col_end;
 
 	if (I->width % jobs == 0)
